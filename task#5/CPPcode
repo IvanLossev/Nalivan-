@@ -1,0 +1,26 @@
+#include <iostream>
+#include <string>
+
+int main()
+{
+    const char space = ' ';
+    int number;
+    std::cout << "Enter number from 1 to 7:" << space;
+    std::cin >> number;
+    std::cout << std::endl;
+    std::string days_of_week[7] = {"Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"};
+
+    if(1 <= number && number <= 7)
+    {
+        for(int iter = number - 1; iter < 7; iter ++)
+        {
+            std::cout << days_of_week[iter] << space;
+        }
+    }
+
+    else
+    {
+        std::cout << "You've entered wrong number!!!";
+    }
+    return 0;
+}
