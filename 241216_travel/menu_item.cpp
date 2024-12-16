@@ -16,6 +16,7 @@ const chsng::menu_item chsng::BACK_TO_REGIONS = {
 
 namespace {
     const chsng::menu_item* long_east_children[] = {
+        &chsng::BACK_TO_REGIONS,
         &chsng::VLADIK,
         &chsng::SAKHALIN,
         &chsng::KHABAROVSK
@@ -38,6 +39,7 @@ const chsng::menu_item chsng::BACK_TO_TOURS = {
 
 namespace{
     const chsng::menu_item* regions_children[] = {
+        &chsng::BACK_TO_TOURS,
         &chsng::LONG_EAST,
         &chsng::ALTAI,
         &chsng::GLDN_RING
@@ -46,11 +48,11 @@ namespace{
 }
 
 const chsng::menu_item chsng::SHOW_VARIANTS = {
-    "1 - Посмотреть университеты Санкт-Петербурга", chsng::show_variants, &chsng::MAIN, regions_children, size_regions
+    "1 - Путешествовать по Росии", chsng::show_variants, &chsng::MAIN, regions_children, size_regions
 };
 
 const chsng::menu_item chsng::END = {
-    "0 - Я уже студент", chsng::end, &chsng::MAIN
+    "0 - Закончить путешествие", chsng::end, &chsng::MAIN
 };
 
 namespace {

@@ -7,7 +7,7 @@ const chsng::menu_item* chsng::show_variants (const menu_item* current){
         std::cout << current->child[i]->title << std::endl;
     }
     std::cout << current->child[0]->title << std::endl;
-    std::cout << "Выбор >";
+    std::cout << "Выбор > ";
 
     int input;
     std::cin >> input;
