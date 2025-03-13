@@ -2,14 +2,5 @@
 # https://www.atlassian.com/ru/git/tutorials/saving-changes/gitignore#git-ignore-patterns
 #
 
-build_*/
-lib/
-
 .vscode/
 Testing/
-CMakeFiles/
-
-*.exe
-*.ii
-*.s
-*.o
