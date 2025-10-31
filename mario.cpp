@@ -25,25 +25,13 @@ void check_mario_collisions(
 	int& score
 );
 
-void ClearMap() {
-    for (int i = 0; i < mapWidth; i++)
-        map[0][i] = ' ';
-    map[0][mapWidth] = '\0';
+void clear_map(char **map, const int width, const int height);
 
-    for (int j = 1; j < mapHeight; j++)
-        sprintf(map[j], map[0]);
-}
+void show_map(char **map, const int width, const int height);
 
-void ShowMap() {
-    map[mapHeight - 1][mapWidth - 1] = '\0';
-    for (int j = 0; j < mapHeight; j++)
-        printf("%s", map[j]);
-}
+void set_cursor_position(const int x, const int y);
 
-void SetObjectPos(TObject* obj, float xPos, float yPos) {
-    (*obj).x = xPos;
-    (*obj).y = yPos;
-}
+void set_obj_position(TObject* obj, const float xpos, const float ypos);
 
 void InitObject(TObject* obj, float xPos, float yPos, float oWidth, float oHeight, char inType) {
     SetObjectPos(obj, xPos, yPos);
@@ -188,13 +176,6 @@ void PutObjectOnMap(TObject obj) {
 
 }
 
-
-void setCur(int x, int y) {
-    COORD coord;
-    coord.X = x;
-    coord.Y = y;
-    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
-}
 
 void HorizonMoveMap(float dx) {
     mario.x -= dx;
@@ -374,4 +355,5 @@ int main()
     return 0;
 
 }
+
 
