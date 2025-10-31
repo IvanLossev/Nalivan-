@@ -1,20 +1,21 @@
-#define _CRT_SECURE_NO_WARNINGS
-#include <stdio.h>
-#include <stdlib.h>
-#include <math.h>
-#include <windows.h>
 #define mapWidth 80
 #define mapHeight 25
+#define _CRT_SECURE_NO_WARNINGS
+#include <cstring>
+#include <iostream>
+#include <math.h>
+#include <stdio.h>
+#include <stdlib.h>
+#include <windows.h>
 
-typedef struct SOdject {
-    float x, y;
-    float width, height;
-    float vertSpeed;
-    BOOL IsFly;
-    char cType;
-    float horizSpeed;
-
-} TObject;
+struct TObject {
+	float x, y;
+	float width, height;
+	float vert_speed;
+	float horiz_speed;
+	bool is_fly;
+	char ctype;
+};
 
 char map[mapHeight][mapWidth + 1];
 TObject mario;
@@ -375,4 +376,5 @@ int main()
         Sleep(10);
     } while (GetKeyState(VK_ESCAPE) >= 0);
     return 0;
+
 }
