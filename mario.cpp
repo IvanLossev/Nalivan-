@@ -17,17 +17,13 @@ struct TObject {
 	char ctype;
 };
 
-char map[mapHeight][mapWidth + 1];
-TObject mario;
-TObject* brick = NULL;
-int brickLength;
-
-TObject* moving = NULL;
-int movingLength;
-
-int level = 1;
-int score;
-int maxLvl;
+void check_mario_collisions(
+	TObject& mario, 
+	TObject *&bricks, int& bricks_count,
+	TObject *&movings, int& movings_count,
+	const int current_level,
+	int& score
+);
 
 void ClearMap() {
     for (int i = 0; i < mapWidth; i++)
@@ -378,3 +374,4 @@ int main()
     return 0;
 
 }
+
