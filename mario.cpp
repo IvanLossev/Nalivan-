@@ -1,12 +1,17 @@
-#define mapWidth 80
-#define mapHeight 25
-#define _CRT_SECURE_NO_WARNINGS
 #include <cstring>
 #include <iostream>
 #include <math.h>
 #include <stdio.h>
 #include <stdlib.h>
-#include <windows.h>
+#include <windows.h>		
+
+const char BRICK = '#';
+const char EMPTY_BOX = '-';
+const char ENEMY = 'o';
+const char FULL_BOX = '?';
+const char MARIO = '@';
+const char MONEY = '$';
+const char WIN_BRICK = '+';
 
 struct TObject {
 	float x, y;
@@ -17,21 +22,28 @@ struct TObject {
 	char ctype;
 };
 
-void check_mario_collisions(
-	TObject& mario, 
-	TObject *&bricks, int& bricks_count,
-	TObject *&movings, int& movings_count,
-	const int current_level,
-	int& score
-);
+void clear_map(char **map, const int width, const int height) {
+	for (int i = 0; i < width; i++) {
+		map[0][i] = ' ';
+	}
+	map[0][width] = '\0';
+	for (int j = 1; j < height; j++) {
+		sprintf(map[j], map[0]);
+	}
+}
 
-void clear_map(char **map, const int width, const int height);
+void show_map(char **map, const int width, const int height) {
+	map[height - 1][width - 1] = '\0';
+	for (int j = 0; j < height; j++) {
+		std::cout << map[j];
+	}
+}
 
-void show_map(char **map, const int width, const int height);
 
-void set_cursor_position(const int x, const int y);
-
-void set_obj_position(TObject* obj, const float xpos, const float ypos);
+void set_obj_position(TObject* obj, const float xpos, const float ypos) {
+	obj->x = xpos;
+	obj->y = ypos;
+}
 
 void InitObject(TObject* obj, float xPos, float yPos, float oWidth, float oHeight, char inType) {
     SetObjectPos(obj, xPos, yPos);
@@ -145,7 +157,7 @@ void HorizonMoveObject(TObject *obj) {
             obj[0].horizSpeed = -obj[0].horizSpeed;
             return;
         }
-    }
+    }~~
 
 
     if (obj[0].cType == 'o') {
@@ -176,6 +188,13 @@ void PutObjectOnMap(TObject obj) {
 
 }
 
+
+void setCur(int x, int y) {
+    COORD coord;
+    coord.X = x;
+    coord.Y = y;
+    SetConsoleCursorPosition(GetStdHandle(STD_OUTPUT_HANDLE), coord);
+}
 
 void HorizonMoveMap(float dx) {
     mario.x -= dx;
@@ -353,7 +372,4 @@ int main()
         Sleep(10);
     } while (GetKeyState(VK_ESCAPE) >= 0);
     return 0;
-
 }
-
-
