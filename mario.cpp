@@ -91,7 +91,7 @@ void obj_move_by_vertical(TObject* obj, TObject& mario, TObject *&bricks, int& b
 					temp[i] = movings[i];
 				}
 				delete [] movings;
-				movings = temp = temp;
+				movings = temp;
 				
 				init_obj(&movings[movings_count - 1], bricks[i].x, bricks[i].y - 3, 3, 2, MONEY);
 				movings[movings_count - 1].vertical_speed = -0.7;
@@ -110,12 +110,7 @@ void obj_move_by_vertical(TObject* obj, TObject& mario, TObject *&bricks, int& b
 	}
 }
 
-//void DeleteMoving(int i) {
-//    movingLength--;
-//    moving[i] = moving[movingLength];
-//    moving = new TObject[movingLength];
-//}
-
+	
 void DeleteMoving(int i) {
     if (movingLength <= 0) return;
 
@@ -227,8 +222,6 @@ void HorizonMoveMap(float dx) {
         moving[i].x += dx;
 }
 
-BOOL IsCollision(TObject o1, TObject o2) {
-    return ((o1.x + o1.width) > o2.x) && (o1.x < (o2.x + o2.width)) && ((o1.y + o1.height) > o2.y) && (o1.y < (o2.y + o2.height));
 }
 
 TObject* GetNewBrick() {
