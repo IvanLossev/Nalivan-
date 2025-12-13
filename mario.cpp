@@ -45,13 +45,13 @@ void set_obj_position(TObject* obj, const float xpos, const float ypos) {
 	obj->y = ypos;
 }
 
-void InitObject(TObject* obj, float xPos, float yPos, float oWidth, float oHeight, char inType) {
-    SetObjectPos(obj, xPos, yPos);
-    (*obj).width = oWidth;
-    (*obj).height = oHeight;
-    (*obj).vertSpeed = 0;
-    (*obj).cType = inType;
-    (*obj).horizSpeed = 0.2;
+void init_object(TObject* obj, const float xpos, const float ypos, const float owidth, const float oheight, const char inType) {
+    set_obj_position(obj, xpos, ypos);
+ 	obj->width = owidth;
+ 	obj->height = oheight;
+ 	obj->vert_speed = 0;
+ 	obj->ctype = inType;
+ 	obj->horiz_speed = 0.2;
 }
 
 void CreateLevel(int lvl);
