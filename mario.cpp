@@ -63,38 +63,51 @@ void Dead() {
     CreateLevel(level);
 }
 
-BOOL IsCollision(TObject o1, TObject o2);
+bool is_collision(TObject* obj1, TObject* obj2){
+	return (
+		obj1->x + obj1->width > obj2->x &&
+		obj1->x < obj2->x + obj2->width &&
+		obj1->y + obj1->height > obj2->y &&
+		obj1->y < obj2->y + obj2->height
+	);
+}
 
-void VertMoveObject(TObject* obj) {
-    (*obj).IsFly = TRUE;
-    (*obj).vertSpeed += 0.05;
-    SetObjectPos(obj, (*obj).x, (*obj).y + (*obj).vertSpeed);
+void obj_move_by_vertical(TObject* obj, TObject& mario, TObject *&bricks, int& bricks_count, TObject *&movings, int& movings_count, int& current_level, const int max_lvl, int&_score) {
+    obj->is_fly = true;
+    obj->vertical_speed += 0.05;
+ 	set_obj_position(obj, obj->x, obj->y + obj->vertical_speed);
 
-    for (int i = 0; i < brickLength; i++) {
-        if (IsCollision(*obj, brick[i])) {
-
-            if (obj[0].vertSpeed > 0) {
-                obj[0].IsFly = FALSE;
+    for (int i = 0; i < bricks_count; i++) {
+        if (is_collision(obj, &brick[i])) {
+            if (obj->vertical_speed > 0) {
+                obj->is_fly = false;
             }
 
-            if ((brick[i].cType == '?') && (obj[0].vertSpeed < 0) && (obj == &mario)) {
-                brick[i].cType = '-';
-                InitObject(GetNewMoving(), brick[i].x, brick[i].y-3, 3, 2, '$');
-                moving[movingLength - 1].vertSpeed = -0.7;
-            }
-
-            (*obj).y -= (*obj).vertSpeed;
-            (*obj).vertSpeed = 0;
-            if (brick[i].cType == '+') {
-                level++;
-                if (level > maxLvl) level = 1;
-                system("color 2F");
-                Sleep(500);
-                CreateLevel(level);
-                
-            }
-        }
-    }
+            if (bricks[i].ctype == FULL_BOX && obj->vertical_speed < 0 && obj == &mario) {
+                bricks[i].ctype = EMPTY_BOX;
+				movings_count++;
+                TObject* temp = new TObject[movings_count];
+ 				for (int i = 0; i < movings_count - 1; i++) {
+					temp[i] = movings[i];
+				}
+				delete [] movings;
+				movings = temp = temp;
+				
+				init_obj(&movings[movings_count - 1], bricks[i].x, bricks[i].y - 3, 3, 2, MONEY);
+				movings[movings_count - 1].vertical_speed = -0.7;
+			
+				obj->y -= obj->vertical_speed;
+				obj->vertical_speed = 0;
+				
+				if (bricks[i].ctype == WIN_BRICK) {
+					current_level++;
+					if (current_level > max_level) {
+						current_level = 1;
+					}
+				}
+			}
+		}
+	}
 }
 
 //void DeleteMoving(int i) {
