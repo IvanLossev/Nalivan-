@@ -342,40 +342,66 @@ void CreateLevel(int lvl) {
 
 int main()
 {
-    CreateLevel(level);
-    
+    hide_cursor();
+ 	
+ 	const int map_width = 200;
+ 	const int map_height = 25;
+ 	char **map = new char* [map_height];
+ 	for (int i = 0; i < map_height; i++) {
+ 		map[i] = new char[map_width + 1];
+ 	}
+ 	
+ 	TObject mario;
+ 	
+ 	TObject *bricks = nullptr;
+ 	int bricks_count;
+ 	
+ 	TObject *movings = nullptr;
+ 	int movings_count;
+ 	
+ 	int current_level = 1;
+ 	const int max_level = 3;
+ 	int score;
+ 	
+ 	create_current_level(
+ 		current_level,
+ 		mario, 
+ 		bricks, bricks_count, 
+ 		movings, movings_count,
+ 		score);
+ 	
+ 	const int jump_key = VK_SPACE;
+ 	const int exit_key = VK_ESCAPE;
+ 	const char left_direction_key = 'A';
+ 	const char right_direction_key = 'D';
 
     do {
-        ClearMap();
+        clear_map(map, map_width, map_height);
 
-        if ((mario.IsFly == FALSE) && (GetKeyState(VK_SPACE) < 0)) mario.vertSpeed = -1;
-        if (GetKeyState('A') < 0) HorizonMoveMap(1);
-        if (GetKeyState('D') < 0) HorizonMoveMap(-1);
-
-        if (mario.y >= mapHeight) Dead();
-
-        VertMoveObject(&mario);
-        MarioCollision();
-        for (int i = 0; i < brickLength; i++) {
-            PutObjectOnMap(brick[i]);
-        }
-        for (int i = 0; i < movingLength; i++) {
-            VertMoveObject(moving+i);
-            HorizonMoveObject(moving+i);
-            if (moving[i].y > mapHeight) {
-                DeleteMoving(i);
-                i--;
-                continue;
-            }
-            PutObjectOnMap(moving[i]);
-        }
-
-        PutObjectOnMap(mario);
-        ScoreOnMap();
-        setCur(0, 0);
-        ShowMap();
-
-        Sleep(10);
-    } while (GetKeyState(VK_ESCAPE) >= 0);
-    return 0;
+        if (mario.is_fly == false && GetKeyState(jump_key) < 0) {
++ 			mario.vert_speed = -1;
++ 		}
++ 		if (GetKeyState(left_direction_key) < 0) {
++ 			move_map_horizontally(
++ 				1, 
++ 				mario, 
++ 				bricks, bricks_count, 
++ 				movings, movings_count);
++ 		}
++ 		if (GetKeyState(right_direction_key) < 0) {
++ 			move_map_horizontally(
++ 				-1, 
++ 				mario, 
++ 				bricks, bricks_count, 
++ 				movings, movings_count);
++ 		}
++ 		if (mario.y > map_height) {
++ 			rerun_level(
++ 				mario, 
++ 				bricks, bricks_count, 
++ 				movings, movings_count, 
++ 				current_level,  
++ 				score);
++ 		}
+	}
 }
