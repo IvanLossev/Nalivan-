@@ -1,0 +1,14 @@
+{
+	"version": "2.0.0",
+	"tasks": [
+		{
+			"label": "Compile and Run Mario Game",
+			"type": "shell",
+			"command": "g++ -o marioGame main.cpp Game.cpp -std=c++17 && ./marioGame",
+			"args": [],
+			"isBackground": false,
+			"problemMatcher": [],
+			"group": "build"
+		}
+	]
+}
