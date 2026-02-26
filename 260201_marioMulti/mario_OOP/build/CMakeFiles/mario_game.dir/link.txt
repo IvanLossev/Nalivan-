@@ -1,0 +1,3 @@
+"C:\Program Files\CMake\bin\cmake.exe" -E rm -f CMakeFiles\mario_game.dir/objects.a
+C:\_Prog\instsall\mingw64\bin\ar.exe qc CMakeFiles\mario_game.dir/objects.a @CMakeFiles\mario_game.dir\objects1.rsp
+C:\_Prog\instsall\mingw64\bin\c++.exe  -finput-charset=utf-8 -fexec-charset=utf-8 -O3 -DNDEBUG -Wl,--whole-archive CMakeFiles\mario_game.dir/objects.a -Wl,--no-whole-archive -o mario_game.exe -Wl,--out-implib,libmario_game.dll.a -Wl,--major-image-version,0,--minor-image-version,0 @CMakeFiles\mario_game.dir\linkLibs.rsp
