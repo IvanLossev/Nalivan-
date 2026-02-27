@@ -5,16 +5,16 @@
 #include <QString>
 #include <QDebug>
 
-          CalculatorWindow::CalculatorWindow(QWidget *parent)
+CalculatorWindow::CalculatorWindow(QWidget *parent)
     : QWidget(parent)
-, m_leftOperand(0.0)
-, m_operator("")
-, m_waitingForOperand(true)
+    , m_leftOperand(0.0)
+    , m_operator("")
+    , m_waitingForOperand(true)
 {
     m_display = new QLineEdit("0");
     m_display->setReadOnly(true);
     m_display->setAlignment(Qt::AlignRight);
-    m_display->setMaxLength(15);
+    m_display->setMaxLength(30);
 
     QPushButton *button0 = new QPushButton("0");
     QPushButton *button1 = new QPushButton("1");
@@ -77,7 +77,7 @@
     connect(buttonClear, &QPushButton::clicked, this, &CalculatorWindow::clearPressed);
 
     setWindowTitle("Калькулятор");
-    resize(300, 250);
+    resize(350, 300);
 }
 
 CalculatorWindow::~CalculatorWindow()
@@ -93,17 +93,24 @@ void CalculatorWindow::digitPressed()
     QString currentText = m_display->text();
 
     if (m_waitingForOperand) {
-        currentText = digit;
+        //если ждём новый операнд (после оператора)
+        if (currentText.endsWith('+') || currentText.endsWith('-') ||
+            currentText.endsWith('*') || currentText.endsWith('/')) {
+            //добавляем цифру после оператора
+            m_display->setText(currentText + digit);
+        } else {
+            //начинаем новое число
+            m_display->setText(digit);
+        }
         m_waitingForOperand = false;
     } else {
+        //добавляем цифру к текущему числу
         if (currentText == "0" && digit != "0") {
-            currentText = digit;
-        } else if (currentText != "0" || digit == "0") {
-            currentText += digit;
+            m_display->setText(digit);
+        } else {
+            m_display->setText(currentText + digit);
         }
     }
-
-    m_display->setText(currentText);
 }
 
 void CalculatorWindow::operationPressed()
@@ -112,25 +119,55 @@ void CalculatorWindow::operationPressed()
     if (!button) return;
 
     QString newOperator = button->text();
-    double currentValue = m_display->text().toDouble();
+    QString currentText = m_display->text();
 
-    if (m_operator.isEmpty()) {
+    //сохраняем левый операнд
+    bool ok;
+    double currentValue = currentText.toDouble(&ok);
+    if (ok) {
         m_leftOperand = currentValue;
-        m_operator = newOperator;
-        m_waitingForOperand = true;
-    } else {
-        calculate();
-        m_operator = newOperator;
-        m_leftOperand = m_display->text().toDouble();
-        m_waitingForOperand = true;
     }
+
+    //если последний символ уже оператор, заменяем его
+    if (currentText.endsWith('+') || currentText.endsWith('-') ||
+        currentText.endsWith('*') || currentText.endsWith('/')) {
+        currentText.chop(1);
+        m_display->setText(currentText + newOperator);
+    } else {
+        //добавляем новый оператор
+        m_display->setText(currentText + newOperator);
+    }
+
+    m_operator = newOperator;
+    m_waitingForOperand = true; //ждём второй операнд
 }
 
 void CalculatorWindow::equalsPressed()
 {
     if (m_operator.isEmpty()) return;
 
-    calculate();
+    QString currentText = m_display->text();
+
+    //извлекаем правый операнд из текста
+    QStringList parts;
+    if (currentText.contains('+')) parts = currentText.split('+');
+    else if (currentText.contains('-')) parts = currentText.split('-');
+    else if (currentText.contains('*')) parts = currentText.split('*');
+    else if (currentText.contains('/')) parts = currentText.split('/');
+
+    if (parts.size() == 2) {
+        double rightOperand = parts[1].toDouble();
+
+        //cохраняем выражение перед вычислением
+        QString expression = currentText;
+
+        //вычисляем результат
+        calculate(rightOperand);
+
+        //показываем выражение и результат
+        m_display->setText(expression + "=" + QString::number(m_leftOperand));
+    }
+
     m_operator.clear();
     m_waitingForOperand = true;
 }
@@ -143,9 +180,8 @@ void CalculatorWindow::clearPressed()
     m_waitingForOperand = true;
 }
 
-void CalculatorWindow::calculate()
+void CalculatorWindow::calculate(double rightOperand)
 {
-    double rightOperand = m_display->text().toDouble();
     double result = 0.0;
 
     if (m_operator == "+") {
@@ -165,5 +201,5 @@ void CalculatorWindow::calculate()
         }
     }
 
-    m_display->setText(QString::number(result));
+    m_leftOperand = result;
 }

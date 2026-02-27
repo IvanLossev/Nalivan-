@@ -2,6 +2,7 @@
 #define CALCULATORWINDOW_HPP
 
 #include <QWidget>
+#include <QString>
 
 class QLineEdit;
 class QPushButton;
@@ -26,7 +27,7 @@ private:
     QString m_operator;
     bool m_waitingForOperand;
 
-    void calculate();
+    void calculate(double rightOperand);
 };
 
 #endif
