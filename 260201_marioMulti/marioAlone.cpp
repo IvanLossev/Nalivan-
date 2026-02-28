@@ -8,6 +8,7 @@
 const char BRICK = '#';
 const char EMPTY_BOX = '-';
 const char ENEMY = 'o';
+const char FLYING_ENEMY = 'W';
 const char FULL_BOX = '?';
 const char MARIO = '@';
 const char MONEY = '$';
@@ -23,6 +24,9 @@ struct TObject {
     float horiz_speed;
     bool is_fly;
     char ctype;
+    // Поля для летающих противников
+    float origin_x, origin_y;
+    float range_x, range_y;
 };
 
 // Прототипы функций
@@ -32,6 +36,7 @@ void show_map(char **map, int width, int height);
 void set_cursor_position(int x, int y);
 void set_obj_position(TObject* obj, float xpos, float ypos);
 void init_object(TObject* obj, float xpos, float ypos, float owidth, float oheight, char inType);
+void init_flying_enemy(TObject* obj, float xpos, float ypos, float owidth, float oheight, float rx, float ry, float hspd, float vspd);
 void create_current_level(
     int level,
     TObject& mario,
@@ -55,6 +60,7 @@ void move_obj_vertically(
     int& current_level,
     int& score
 );
+void move_flying_enemy(TObject* obj);
 void delete_moving(TObject*& movings, int& movings_count, int i);
 void mario_collision(
     TObject& mario,
@@ -124,6 +130,20 @@ void init_object(TObject* obj, float xpos, float ypos, float owidth, float oheig
     obj->ctype = inType;
     obj->horiz_speed = 0.2f;
     obj->is_fly = false;
+    obj->origin_x = xpos;
+    obj->origin_y = ypos;
+    obj->range_x = 0.0f;
+    obj->range_y = 0.0f;
+}
+
+void init_flying_enemy(TObject* obj, float xpos, float ypos, float owidth, float oheight, float rx, float ry, float hspd, float vspd) {
+    init_object(obj, xpos, ypos, owidth, oheight, FLYING_ENEMY);
+    obj->origin_x = xpos;
+    obj->origin_y = ypos;
+    obj->range_x = rx;
+    obj->range_y = ry;
+    obj->horiz_speed = hspd;
+    obj->vert_speed = vspd;
 }
 
 void create_current_level(
@@ -146,7 +166,7 @@ void create_current_level(
 
     score = 0;
 
-    init_object(&mario, 39.0f, 10.0f, 3.0f, 3.0f, MARIO);
+    init_object(&mario, 39.0f, 12.0f, 3.0f, 3.0f, MARIO);
 
     switch (level) {
         case 1:
@@ -167,10 +187,14 @@ void create_current_level(
             init_object(&bricks[11], 150.0f, 20.0f, 40.0f, 5.0f, BRICK);
             init_object(&bricks[12], 210.0f, 15.0f, 10.0f, 10.0f, WIN_BRICK);
 
-            movings_count = 2;
+            // 2 обычных врага + 3 летающих
+            movings_count = 5;
             movings = new TObject[movings_count];
             init_object(&movings[0], 25.0f, 10.0f, 3.0f, 2.0f, ENEMY);
             init_object(&movings[1], 80.0f, 10.0f, 3.0f, 2.0f, ENEMY);
+            init_flying_enemy(&movings[2], 40.0f, 8.0f, 3.0f, 2.0f, 10.0f, 5.0f, 0.15f, 0.1f);
+            init_flying_enemy(&movings[3], 110.0f, 12.0f, 3.0f, 2.0f, 8.0f, 4.0f, 0.12f, 0.08f);
+            init_flying_enemy(&movings[4], 160.0f, 10.0f, 3.0f, 2.0f, 12.0f, 6.0f, 0.18f, 0.12f);
             break;
 
         case 2:
@@ -184,7 +208,8 @@ void create_current_level(
             init_object(&bricks[4], 150.0f, 20.0f, 40.0f, 5.0f, BRICK);
             init_object(&bricks[5], 210.0f, 15.0f, 10.0f, 10.0f, WIN_BRICK);
 
-            movings_count = 6;
+            // 6 обычных врагов + 3 летающих
+            movings_count = 9;
             movings = new TObject[movings_count];
             init_object(&movings[0], 25.0f, 10.0f, 3.0f, 2.0f, ENEMY);
             init_object(&movings[1], 80.0f, 10.0f, 3.0f, 2.0f, ENEMY);
@@ -192,6 +217,9 @@ void create_current_level(
             init_object(&movings[3], 120.0f, 10.0f, 3.0f, 2.0f, ENEMY);
             init_object(&movings[4], 160.0f, 10.0f, 3.0f, 2.0f, ENEMY);
             init_object(&movings[5], 175.0f, 10.0f, 3.0f, 2.0f, ENEMY);
+            init_flying_enemy(&movings[6], 45.0f, 10.0f, 3.0f, 2.0f, 10.0f, 5.0f, 0.15f, 0.1f);
+            init_flying_enemy(&movings[7], 100.0f, 8.0f, 3.0f, 2.0f, 8.0f, 4.0f, 0.12f, 0.08f);
+            init_flying_enemy(&movings[8], 140.0f, 12.0f, 3.0f, 2.0f, 12.0f, 6.0f, 0.18f, 0.12f);
             break;
 
         case 3:
@@ -203,7 +231,8 @@ void create_current_level(
             init_object(&bricks[2], 120.0f, 15.0f, 15.0f, 10.0f, BRICK);
             init_object(&bricks[3], 160.0f, 10.0f, 15.0f, 15.0f, WIN_BRICK);
 
-            movings_count = 6;
+            // 6 обычных врагов + 3 летающих
+            movings_count = 9;
             movings = new TObject[movings_count];
             init_object(&movings[0], 25.0f, 10.0f, 3.0f, 2.0f, ENEMY);
             init_object(&movings[1], 50.0f, 10.0f, 3.0f, 2.0f, ENEMY);
@@ -211,6 +240,9 @@ void create_current_level(
             init_object(&movings[3], 90.0f, 10.0f, 3.0f, 2.0f, ENEMY);
             init_object(&movings[4], 120.0f, 10.0f, 3.0f, 2.0f, ENEMY);
             init_object(&movings[5], 135.0f, 10.0f, 3.0f, 2.0f, ENEMY);
+            init_flying_enemy(&movings[6], 35.0f, 8.0f, 3.0f, 2.0f, 10.0f, 5.0f, 0.15f, 0.1f);
+            init_flying_enemy(&movings[7], 70.0f, 6.0f, 3.0f, 2.0f, 8.0f, 4.0f, 0.12f, 0.08f);
+            init_flying_enemy(&movings[8], 145.0f, 5.0f, 3.0f, 2.0f, 12.0f, 6.0f, 0.18f, 0.12f);
             break;
     }
 }
@@ -287,6 +319,22 @@ void move_obj_vertically(
     }
 }
 
+void move_flying_enemy(TObject* obj) {
+    //горизонтальное движение
+    obj->x += obj->horiz_speed;
+    if (obj->x > obj->origin_x + obj->range_x || obj->x < obj->origin_x - obj->range_x) {
+        obj->horiz_speed = -obj->horiz_speed;
+        obj->x += obj->horiz_speed;
+    }
+
+    //вертикальное движение
+    obj->y += obj->vert_speed;
+    if (obj->y > obj->origin_y + obj->range_y || obj->y < obj->origin_y - obj->range_y) {
+        obj->vert_speed = -obj->vert_speed;
+        obj->y += obj->vert_speed;
+    }
+}
+
 void delete_moving(TObject*& movings, int& movings_count, int i) {
     if (movings_count <= 0 || i < 0 || i >= movings_count) return;
     movings_count--;
@@ -302,10 +350,10 @@ void mario_collision(
 ) {
     for (int i = 0; i < movings_count; i++) {
         if (is_collision(&mario, &movings[i])) {
-            if (movings[i].ctype == ENEMY) {
+            if (movings[i].ctype == ENEMY || movings[i].ctype == FLYING_ENEMY) {
                 if (mario.is_fly && mario.vert_speed > 0 &&
                     mario.y + mario.height < movings[i].y + movings[i].height * 0.5f) {
-                    score += 50;
+                    score += (movings[i].ctype == FLYING_ENEMY) ? 75 : 50;
                     delete_moving(movings, movings_count, i);
                     i--;
                     continue;
@@ -398,6 +446,10 @@ void move_map_horizontally(
 
     for (int i = 0; i < movings_count; i++) {
         movings[i].x += dx;
+        //сдвигаем и центр патрулирования для летающих врагов
+        if (movings[i].ctype == FLYING_ENEMY) {
+            movings[i].origin_x += dx;
+        }
     }
 }
 
@@ -460,8 +512,12 @@ int main() {
         }
         
         for (int i = 0; i < movings_count; i++) {
-            move_obj_vertically(&movings[i], mario, bricks, bricks_count, movings, movings_count, current_level, score);
-            move_obj_horizontally(&movings[i], mario, bricks, bricks_count, movings, movings_count, current_level, score);
+            if (movings[i].ctype == FLYING_ENEMY) {
+                move_flying_enemy(&movings[i]);
+            } else {
+                move_obj_vertically(&movings[i], mario, bricks, bricks_count, movings, movings_count, current_level, score);
+                move_obj_horizontally(&movings[i], mario, bricks, bricks_count, movings, movings_count, current_level, score);
+            }
             if (movings[i].y > MAP_HEIGHT) {
                 delete_moving(movings, movings_count, i);
                 i--;
